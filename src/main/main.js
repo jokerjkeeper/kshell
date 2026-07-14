@@ -7,7 +7,9 @@ const { SSHManager } = require('./ssh');
 const xshell = require('./xshell-import');
 
 let mainWindow = null;
-const vault = new Vault(path.join(app.getPath('userData'), 'kshell.vault'));
+// 保險庫存於項目目錄下的 data/（隨專案，方便備份/攜帶；已由 .gitignore 排除）。
+// app.getAppPath() 在開發模式即為專案根目錄。
+const vault = new Vault(path.join(app.getAppPath(), 'data', 'kshell.vault'));
 const ssh = new SSHManager();
 
 function createWindow() {
