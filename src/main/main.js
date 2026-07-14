@@ -9,9 +9,19 @@ const xshell = require('./xshell-import');
 let mainWindow = null;
 // 保險庫存於 data/kshell.vault（資料隨程式走，方便備份/攜帶）。
 // - 開發模式（npm start）：專案根目錄 data/
-// - 打包後：可執行檔同目錄 data/（asar 內唯讀，必須寫在 exe 旁）
-const baseDir = app.isPackaged ? path.dirname(app.getPath('exe')) : app.getAppPath();
-const vault = new Vault(path.join(baseDir, 'data', 'kshell.vault'));
+// - portable 綠色版：PORTABLE_EXECUTABLE_DIR 指向 exe 真正所在資料夾
+//   （portable 執行時會解壓到 %TEMP%，app.getPath('exe') 不可用）
+// - nsis 安裝版：可執行檔同目錄 data/
+function resolveBaseDir() {
+  if (process.env.PORTABLE_EXECUTABLE_DIR) return process.env.PORTABLE_EXECUTABLE_DIR;
+  if (app.isPackaged) return path.dirname(app.getPath('exe'));
+  return app.getAppPath();
+}
+const vaultPath = path.join(resolveBaseDir(), 'data', 'kshell.vault');
+const vault = new Vault(vaultPath);
+if (process.env.KSHELL_DEBUG) {
+  console.log(`[vault] path=${vaultPath} initialized=${vault.isInitialized()}`);
+}
 const ssh = new SSHManager();
 
 function createWindow() {
