@@ -9,6 +9,23 @@ const tabs = new Map(); // tabId -> { sessionId, term, fit, paneEl, tabEl, statu
 let activeTab = null;
 let editingId = null;
 
+// 終端全域字體大小（可縮放，記憶於 localStorage）。預設 15，範圍 8–40。
+const FONT_MIN = 8, FONT_MAX = 40;
+let termFontSize = (() => {
+  const v = parseInt(localStorage.getItem('kshell.fontSize'), 10);
+  return v >= FONT_MIN && v <= FONT_MAX ? v : 15;
+})();
+
+/** 設定所有終端的字體大小並重排。 */
+function setFontSize(size) {
+  termFontSize = Math.max(FONT_MIN, Math.min(FONT_MAX, size));
+  localStorage.setItem('kshell.fontSize', termFontSize);
+  for (const t of tabs.values()) {
+    t.term.options.fontSize = termFontSize;
+    t.fit.fit();
+  }
+}
+
 // ==================================================================
 // 鎖屏 / 主密碼
 // ==================================================================
@@ -173,7 +190,7 @@ function createTab(tabId, session) {
 
   const term = new Terminal({
     fontFamily: (session.terminal && session.terminal.fontFace) || 'Consolas, "Courier New", monospace',
-    fontSize: (session.terminal && session.terminal.fontSize) || 14,
+    fontSize: termFontSize, // 全域字體大小（忽略 Xshell 導入的過小值），可用 Ctrl+加/減/滾輪縮放
     cursorBlink: true,
     theme: { background: '#1e1e1e', foreground: '#d4d4d4' },
     scrollback: 5000,
@@ -430,6 +447,21 @@ document.getElementById('btn-import').addEventListener('click', async () => {
   window.addEventListener('mousemove', onMove);
   window.addEventListener('mouseup', onUp);
 })();
+
+// ==================================================================
+// 終端字體縮放（Ctrl + 加/減/0、Ctrl + 滾輪）
+// ==================================================================
+window.addEventListener('keydown', (e) => {
+  if (!e.ctrlKey) return;
+  if (e.key === '=' || e.key === '+') { e.preventDefault(); setFontSize(termFontSize + 1); }
+  else if (e.key === '-' || e.key === '_') { e.preventDefault(); setFontSize(termFontSize - 1); }
+  else if (e.key === '0') { e.preventDefault(); setFontSize(15); } // 重設
+});
+document.getElementById('terminal-host').addEventListener('wheel', (e) => {
+  if (!e.ctrlKey) return;
+  e.preventDefault();
+  setFontSize(termFontSize + (e.deltaY < 0 ? 1 : -1));
+}, { passive: false });
 
 // ==================================================================
 // 啟動
