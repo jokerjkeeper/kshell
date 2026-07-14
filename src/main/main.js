@@ -7,9 +7,11 @@ const { SSHManager } = require('./ssh');
 const xshell = require('./xshell-import');
 
 let mainWindow = null;
-// 保險庫存於項目目錄下的 data/（隨專案，方便備份/攜帶；已由 .gitignore 排除）。
-// app.getAppPath() 在開發模式即為專案根目錄。
-const vault = new Vault(path.join(app.getAppPath(), 'data', 'kshell.vault'));
+// 保險庫存於 data/kshell.vault（資料隨程式走，方便備份/攜帶）。
+// - 開發模式（npm start）：專案根目錄 data/
+// - 打包後：可執行檔同目錄 data/（asar 內唯讀，必須寫在 exe 旁）
+const baseDir = app.isPackaged ? path.dirname(app.getPath('exe')) : app.getAppPath();
+const vault = new Vault(path.join(baseDir, 'data', 'kshell.vault'));
 const ssh = new SSHManager();
 
 function createWindow() {

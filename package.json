@@ -15,18 +15,29 @@
     "ssh2": "^1.16.0"
   },
   "devDependencies": {
-    "electron": "^33.0.0"
+    "electron": "^33.0.0",
+    "electron-builder": "^26.15.3"
   },
   "build": {
     "appId": "com.jokerjkeeper.kshell",
     "productName": "kshell",
+    "asarUnpack": [
+      "node_modules/ssh2/**"
+    ],
     "files": [
       "src/**/*",
-      "node_modules/**/*",
-      "package.json"
+      "package.json",
+      "!**/data/**"
     ],
     "win": {
-      "target": "nsis"
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
   }
 }
