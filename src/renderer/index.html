@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:;" />
+  <title>kshell</title>
+  <link rel="stylesheet" href="../../node_modules/@xterm/xterm/css/xterm.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 鎖屏：主密碼 -->
+  <div id="lock-screen" class="overlay">
+    <div class="lock-box">
+      <h1>kshell</h1>
+      <p id="lock-hint">請輸入主密碼以解鎖保險庫</p>
+      <input type="password" id="master-pw" placeholder="主密碼" autofocus />
+      <input type="password" id="master-pw2" placeholder="再次輸入（首次建立）" style="display:none" />
+      <button id="lock-btn">解鎖</button>
+      <div id="lock-error" class="error"></div>
+    </div>
+  </div>
+
+  <!-- 主介面 -->
+  <div id="app" style="display:none">
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <span>連線</span>
+        <div class="sidebar-actions">
+          <button id="btn-new" title="新增連線">＋</button>
+          <button id="btn-import" title="從 Xshell 導入">⇩</button>
+          <button id="btn-lock" title="鎖定">🔒</button>
+        </div>
+      </div>
+      <div id="session-tree"></div>
+    </aside>
+
+    <main id="main">
+      <div id="tab-bar"></div>
+      <div id="terminal-host">
+        <div id="welcome" class="welcome">
+          <h2>歡迎使用 kshell</h2>
+          <p>雙擊左側連線以開啟，或點「＋」新增、「⇩」從 Xshell 導入。</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Session 編輯器 -->
+  <div id="editor-modal" class="overlay" style="display:none">
+    <div class="modal">
+      <h3 id="editor-title">新增連線</h3>
+      <label>名稱 <input id="f-name" /></label>
+      <label>群組 <input id="f-group" placeholder="預設" /></label>
+      <label>協定
+        <select id="f-protocol"><option>SSH</option><option>TELNET</option></select>
+      </label>
+      <div class="row">
+        <label style="flex:3">主機 <input id="f-host" /></label>
+        <label style="flex:1">埠 <input id="f-port" type="number" value="22" /></label>
+      </div>
+      <label>使用者名稱 <input id="f-username" /></label>
+      <label>認證方式
+        <select id="f-auth"><option value="password">密碼</option><option value="privateKey">私鑰</option></select>
+      </label>
+      <label id="wrap-password">密碼
+        <input id="f-password" type="password" placeholder="留空則連線時再輸入" />
+      </label>
+      <label id="wrap-key" style="display:none">私鑰路徑 <input id="f-key" /></label>
+      <div class="modal-actions">
+        <button id="editor-cancel" class="secondary">取消</button>
+        <button id="editor-save">儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 連線密碼提示 -->
+  <div id="prompt-modal" class="overlay" style="display:none">
+    <div class="modal small">
+      <h3 id="prompt-title">輸入密碼</h3>
+      <p id="prompt-sub"></p>
+      <input id="prompt-pw" type="password" autofocus />
+      <div class="modal-actions">
+        <button id="prompt-cancel" class="secondary">取消</button>
+        <button id="prompt-ok">連線</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../node_modules/@xterm/xterm/lib/xterm.js"></script>
+  <script src="../../node_modules/@xterm/addon-fit/lib/addon-fit.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

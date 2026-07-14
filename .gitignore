@@ -1,0 +1,11 @@
+node_modules/
+dist/
+out/
+*.log
+
+# 使用者本地資料（含加密的連線資訊，絕不上傳）
+data/
+*.vault
+
+# Claude 本地工具配置（含 API token，禁止上傳）
+.claude/
