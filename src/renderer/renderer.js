@@ -392,6 +392,46 @@ document.getElementById('btn-import').addEventListener('click', async () => {
 });
 
 // ==================================================================
+// 側欄寬度拖曳
+// ==================================================================
+(function initSidebarResizer() {
+  const sidebar = document.getElementById('sidebar');
+  const resizer = document.getElementById('sidebar-resizer');
+  const MIN = 120, MAX = 600;
+
+  // 還原上次寬度
+  const saved = parseInt(localStorage.getItem('kshell.sidebarWidth'), 10);
+  if (saved >= MIN && saved <= MAX) sidebar.style.width = saved + 'px';
+
+  let dragging = false;
+  const onMove = (e) => {
+    if (!dragging) return;
+    let w = e.clientX; // 側欄從最左，寬度即為游標 X
+    w = Math.max(MIN, Math.min(MAX, w));
+    sidebar.style.width = w + 'px';
+    const t = tabs.get(activeTab);
+    if (t) t.fit.fit(); // 即時重排終端
+  };
+  const onUp = () => {
+    if (!dragging) return;
+    dragging = false;
+    resizer.classList.remove('dragging');
+    document.body.classList.remove('resizing');
+    localStorage.setItem('kshell.sidebarWidth', parseInt(sidebar.style.width, 10));
+    const t = tabs.get(activeTab);
+    if (t) t.fit.fit();
+  };
+  resizer.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    dragging = true;
+    resizer.classList.add('dragging');
+    document.body.classList.add('resizing');
+  });
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+})();
+
+// ==================================================================
 // 啟動
 // ==================================================================
 initLockScreen();

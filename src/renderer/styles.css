@@ -40,9 +40,18 @@ button.secondary:hover { background: #4a4d51; }
 /* ---- 主佈局 ---- */
 #app { display: flex; height: 100vh; }
 #sidebar {
-  width: 240px; min-width: 240px; background: #252526;
+  width: 240px; min-width: 120px; max-width: 600px; background: #252526;
   border-right: 1px solid #333; display: flex; flex-direction: column;
+  flex-shrink: 0;
 }
+
+/* 側欄與主區之間的拖曳分隔條 */
+#sidebar-resizer {
+  width: 5px; cursor: col-resize; background: transparent;
+  flex-shrink: 0; z-index: 10; margin-left: -3px;
+}
+#sidebar-resizer:hover, #sidebar-resizer.dragging { background: #0e639c; }
+body.resizing, body.resizing * { cursor: col-resize !important; user-select: none; }
 .sidebar-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 12px; font-weight: 600; border-bottom: 1px solid #333;
