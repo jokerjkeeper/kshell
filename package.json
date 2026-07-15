@@ -21,6 +21,7 @@
   "build": {
     "appId": "com.jokerjkeeper.kshell",
     "productName": "kshell",
+    "npmRebuild": false,
     "asarUnpack": [
       "node_modules/ssh2/**"
     ],
